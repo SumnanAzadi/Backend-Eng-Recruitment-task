@@ -1,0 +1,13 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "${workspaceFolder:django-react-todo}/backend/db.sqlite3",
+            "name": "ui"
+        }
+    ],
+    "cSpell.words": [
+        "todos"
+    ]
+}
