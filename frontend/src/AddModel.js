@@ -7,7 +7,7 @@ const AddModel = ({ onAdd }) => {
     const [model_name, setModel] = useState("");
     const [color, setColor] = useState("");
     const [jan_code, setJanCode] = useState("");
-    const [image, setImage] = useState("");
+    const [image, setImage] = useState(null);
     const [modelId, setModelId] = useState(null);
     const [models, setModels] = useState([]);
     const [errorMessage, setErrorMessage] =useState("");
@@ -27,12 +27,13 @@ const AddModel = ({ onAdd }) => {
         .catch(console.error);
     };
     
-    const checkErrorMessage = () =>{
-        if(!errorMessage){
+    const checkErrorMessage = (err) =>{
+        if(!err){
             setBrand("");
             setModel("");
             setColor("");
             setJanCode("");
+            setImage(null);
         }else{
             setShowingAlert(true);
             setTimeout(() => {
@@ -43,19 +44,37 @@ const AddModel = ({ onAdd }) => {
 
     const onSubmit = (e) => {
         e.preventDefault();
-        let item = { brand_name, model_name, color, jan_code};
-        API.post("/", item)
+        const formData = new FormData();
+        formData.append("brand_name",brand_name);
+        formData.append("model_name",model_name);
+        formData.append("color",color);
+        formData.append("jan_code",jan_code);
+        if(image){
+            formData.append("image",image);
+        }
+        API.post("/", formData)
         .then(() => refreshModel())
-        .catch(err => setErrorMessage(err.response.data.jan_code[0]));
-        checkErrorMessage();
+        .catch(err => {
+            setErrorMessage(err.response.data.jan_code[0]);
+            checkErrorMessage(err.response.data.jan_code[0]);
+        });
     };
 
     const onUpdate = (id) => {
-        let item = { brand_name, model_name, color, jan_code };
-        API.patch(`/${id}/`, item)
+        const formData = new FormData();
+        formData.append("brand_name",brand_name);
+        formData.append("model_name",model_name);
+        formData.append("color",color);
+        formData.append("jan_code",jan_code);
+        if(image){
+            formData.append("image",image);
+        }
+        API.patch(`/${id}/`, formData)
         .then((res) => refreshModel())
-        .catch(err => setErrorMessage(err.response.data.jan_code[0]));
-        checkErrorMessage();
+        .catch(err => {
+            setErrorMessage(err.response.data.jan_code[0]);
+            checkErrorMessage(err.response.data.jan_code[0]);
+        });
     };
 
     const onDelete = (id) => {
@@ -121,7 +140,7 @@ const AddModel = ({ onAdd }) => {
                             <Form.Label>Model Image</Form.Label>
                             <Form.Control 
                                 type="file"
-                                onChange={(e) => setImage(e.target.files[0]["name"])}
+                                onChange={(e) => setImage(e.target.files[0])}
                             />
                         </Form.Group>
                     
